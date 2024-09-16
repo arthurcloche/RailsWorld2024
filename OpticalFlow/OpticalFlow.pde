@@ -10,6 +10,8 @@ Movie railLogo;
 Movie iconYear;
 Movie ruby;
 
+PImage gray;
+
 Capture cam;
 DwPixelFlow context;  
 DwOpticalFlow opticalflow;
@@ -26,14 +28,21 @@ int view_h = int(view_w * cam_h/(float)cam_w);
 
 int cellSize = 4;
 int cols, rows;
-char[] asciiChars = {'@', '#', 'S', '%', '?', '*', '+', ';', ':', ',', '.'};
+//char[] asciiChars = {'@', '#', 'S', '%', '?', '*', '+', ';', ':', ',', '.'};
+char[] asciiChars = {'R', 'A', 'I', 'L', 'S','W', 'O', 'R', 'L', 'D', '2', '0', '2', '4' };
 char[] edgeChars = {'|', '/', '-', '\\', '|', '/', '-', '\\'};
 float[] bright;
 float[][] sobelX, sobelY;
 float threshold = 0.5;
 
-color[] colors  = {  
-  #000000, #3B1D62, #6A8D48, #CB0C1C, #71A0FF, #9DBD59, #FFFFFF
+color[] colors  = {
+    #000000,
+    #3B1D62, #3B1D62,
+    #6A8D48, #6A8D48,
+    #CB0C1C, #CB0C1C,
+    #71A0FF, #71A0FF, 
+    #9DBD59, #9DBD59, 
+    #FFFFFF
 };
 
 public void settings() {
@@ -54,6 +63,8 @@ public void setup() {
     iconYear.loop();
     ruby = new Movie(this, "rails.mov");
     ruby.loop();
+    
+    gray = loadImage("gray2.png");
 
     opticalflow = new DwOpticalFlow(context, cam_w, cam_h);
 
@@ -100,8 +111,8 @@ public void setup() {
     
     if( cam.available() ){
       cam.read();
-      
-      
+     
+     
       // render to offscreenbuffer
       pg_cam.beginDraw();
       pg_cam.image(cam, 0, 0);
@@ -120,15 +131,21 @@ public void setup() {
     pg_oflow.endDraw();
     pg_render.beginDraw();
     pg_render.clear();
+    pg_render.image(pg_cam,0,0,width,height);
+    pg_render.fill(0,160);
+    pg_render.rect(0,0,width,height);
+    pg_render.image(gray, 0,-80,width/2, height/2);
+    //pg_render.filter(255,255);
+    //pg_render.image(ruby, 0, 0, width, height);
     pg_render.endDraw();
     
     // flow visualizations
     opticalflow.param.display_mode = 1;
-    opticalflow.renderVelocityShading(pg_oflow);
-    opticalflow.renderVelocityStreams(pg_oflow, 5);//
+    opticalflow.renderVelocityShading(pg_render);
+    opticalflow.renderVelocityStreams(pg_render, 5);
     
     background(0);
-    asciiRender(pg_oflow);
+    asciiRender(pg_render);
     
   }
 
