@@ -6,9 +6,9 @@ import com.thomasdiewald.pixelflow.java.DwPixelFlow;
 import com.thomasdiewald.pixelflow.java.imageprocessing.DwOpticalFlow;
 import com.thomasdiewald.pixelflow.java.imageprocessing.filter.DwFilter;
 
-Movie railLogo;
-Movie iconYear;
-Movie ruby;
+//Movie railLogo;
+//Movie iconYear;
+//Movie ruby;
 
 PImage gray;
 
@@ -64,7 +64,7 @@ public void setup() {
     //ruby = new Movie(this, "rails.mov");
     //ruby.loop();
     
-    gray = loadImage("gray2.png");
+    gray = loadImage("gray.png");
 
     opticalflow = new DwOpticalFlow(context, cam_w, cam_h);
 
