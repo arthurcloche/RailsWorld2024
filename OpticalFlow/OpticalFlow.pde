@@ -57,12 +57,12 @@ public void setup() {
     context.print();
     context.printGL();
     
-    railLogo = new Movie(this, "02.mov");
-    railLogo.loop();
-    iconYear = new Movie(this, "rails.mov");
-    iconYear.loop();
-    ruby = new Movie(this, "rails.mov");
-    ruby.loop();
+    //railLogo = new Movie(this, "02.mov");
+    //railLogo.loop();
+    //iconYear = new Movie(this, "rails.mov");
+    //iconYear.loop();
+    //ruby = new Movie(this, "rails.mov");
+    //ruby.loop();
     
     gray = loadImage("gray2.png");
 
@@ -99,15 +99,15 @@ public void setup() {
 
   public void draw() {
     
-    if(railLogo.available()){
-      railLogo.read();
-    }
-    if(iconYear.available()){
-      iconYear.read();
-    }
-    if(ruby.available()){
-      ruby.read();
-    }
+    //if(railLogo.available()){
+    //  railLogo.read();
+    //}
+    //if(iconYear.available()){
+    //  iconYear.read();
+    //}
+    //if(ruby.available()){
+    //  ruby.read();
+    //}
     
     if( cam.available() ){
       cam.read();
@@ -127,7 +127,7 @@ public void setup() {
     
     pg_oflow.beginDraw();
     pg_oflow.clear();
-    pg_oflow.image(ruby, 0, 0, width, height);
+    //pg_oflow.image(ruby, 0, 0, width, height);
     pg_oflow.endDraw();
     pg_render.beginDraw();
     pg_render.clear();
