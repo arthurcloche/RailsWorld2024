@@ -50,7 +50,7 @@ color[] colors  = {
 };
 
 public void settings() {
-  size(view_w, view_h, P2D);
+  fullScreen(P2D,2);
   smooth(8);
 }
 
@@ -73,7 +73,7 @@ public void setup() {
     //ruby.loop();
     
     gray = loadImage("gray.png");
-    opticalflow = new DwOpticalFlow(context, cam_w, cam_h);
+    opticalflow = new DwOpticalFlow(context, 1920, 1080);
     
     cam = new Capture(this, 640 ,480, "pipeline:autovideosrc" );
     cam.start();
@@ -122,8 +122,8 @@ public void setup() {
       cam.read();
       // render scaled cam to buffer
       pg_cam.beginDraw();
-      pg_cam.scale(1.5);
-      pg_cam.translate(0,-pg_cam.height * .2);
+      pg_cam.scale(1.2);
+      pg_cam.translate(0,-pg_cam.height * .1);
       pg_cam.image(cam, 0, 0);
       pg_cam.endDraw();
       
@@ -175,8 +175,8 @@ void updateSpritePosition(PImage pg){
   spritePosition.x += spriteDirection.x;
   spritePosition.y += spriteDirection.y;
   
-  if(spritePosition.x < -50 || spritePosition.x > int(width - pg.width/2)){spriteDirection.x *= -1.;};
-  if(spritePosition.y < -100 || spritePosition.y > int(height - pg.height/2+100)){spriteDirection.y *= -1.;};
+  if(spritePosition.x < -50 || spritePosition.x > int(1920 - pg.width/2)){spriteDirection.x *= -1.;};
+  if(spritePosition.y < -100 || spritePosition.y > int(1080 - pg.height/2+100)){spriteDirection.y *= -1.;};
 
 }
 
