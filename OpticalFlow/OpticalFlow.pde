@@ -20,11 +20,13 @@ PGraphics2D pg_oflow;
 PGraphics2D pg_render;
 PGraphics2D pg_cam;
 
-int cam_w = 640;
-int cam_h = 480;
+PVector spritePosition;
+
+int cam_w = 960;
+int cam_h = 540;
 int scale_view = 2;
 int view_w = cam_w * scale_view;
-int view_h = int(view_w * cam_h/(float)cam_w);
+int view_h = cam_h * scale_view;
 
 int cellSize = 4;
 int cols, rows;
@@ -54,8 +56,10 @@ public void setup() {
    
     // main library context
     context = new DwPixelFlow(this);
-    context.print();
-    context.printGL();
+    //context.print();
+    //context.printGL();
+    
+    spritePosition = new PVector(0,-80);
     
     //railLogo = new Movie(this, "02.mov");
     //railLogo.loop();
@@ -65,22 +69,22 @@ public void setup() {
     //ruby.loop();
     
     gray = loadImage("gray.png");
-
     opticalflow = new DwOpticalFlow(context, cam_w, cam_h);
-
-    cam = new Capture(this, 640, 480, "pipeline:autovideosrc" );
+    
+    cam = new Capture(this, 640 ,480, "pipeline:autovideosrc" );
     cam.start();
-    cols = int(cam.width/cellSize);
-    rows = int(cam.height/cellSize);
+    cols = int(cam_w/cellSize);
+    rows = int(cam_h/cellSize);
     
     pg_cam = (PGraphics2D) createGraphics(cam_w, cam_h, P2D);
     pg_cam.noSmooth();
-    
+    pg_render = (PGraphics2D) createGraphics(width, height, P2D);
+    pg_render.smooth(4);
+   
     pg_oflow = (PGraphics2D) createGraphics(width, height, P2D);
     pg_oflow.smooth(4);
     
-    pg_render = (PGraphics2D) createGraphics(width, height, P2D);
-    pg_render.smooth(4);
+    
     
     bright = new float[cols*rows];
     for (int i = 0; i < cols*rows; i++) {
@@ -94,6 +98,7 @@ public void setup() {
     frameRate(60);
     textAlign(CENTER, CENTER);
     noStroke();
+    
   }
   
 
@@ -111,10 +116,10 @@ public void setup() {
     
     if( cam.available() ){
       cam.read();
-     
-     
-      // render to offscreenbuffer
+      // render scaled cam to buffer
       pg_cam.beginDraw();
+      pg_cam.scale(1.5);
+      pg_cam.translate(0,-pg_cam.height * .2);
       pg_cam.image(cam, 0, 0);
       pg_cam.endDraw();
       
@@ -125,26 +130,31 @@ public void setup() {
     // rgba -> grayscale 
     DwFilter.get(context).luminance.apply(pg_cam, pg_cam);
     
-    pg_oflow.beginDraw();
-    pg_oflow.clear();
+    //pg_oflow.beginDraw();
+    //pg_oflow.clear();
     //pg_oflow.image(ruby, 0, 0, width, height);
-    pg_oflow.endDraw();
+    //pg_oflow.endDraw();
+    
     pg_render.beginDraw();
     pg_render.clear();
     pg_render.image(pg_cam,0,0,width,height);
     pg_render.fill(0,160);
     pg_render.rect(0,0,width,height);
-    pg_render.image(gray, 0,-80,width/2, height/2);
+    pg_render.pushMatrix();
+    pg_render.scale(0.5);
+    pg_render.image(gray, spritePosition.x,spritePosition.y);
+    pg_render.popMatrix();
     //pg_render.filter(255,255);
     //pg_render.image(ruby, 0, 0, width, height);
     pg_render.endDraw();
     
     // flow visualizations
-    opticalflow.param.display_mode = 1;
+    opticalflow.param.display_mode = 0;
     opticalflow.renderVelocityShading(pg_render);
     opticalflow.renderVelocityStreams(pg_render, 5);
     
     background(0);
+    //image(pg_render,0,0);
     asciiRender(pg_render);
     
   }
@@ -165,8 +175,8 @@ void applyAscii(PGraphics2D pg){
       color c = pg.pixels[y*pg.width+x];
       float luminance =  brightness(c)/255.;
       color render = colors[floor(luminance * (colors.length-1))];
-      //float diff = luminance - bright[id];
-      //bright[id] += diff * 0.2;
+      float diff = luminance - bright[id];
+      bright[id] += diff * 0.2;
       
       pushMatrix();
       translate((x+cellSize/2), (y+cellSize/2));
@@ -178,7 +188,7 @@ void applyAscii(PGraphics2D pg){
         int edgeIndex = int(map(angle, -PI, PI, 0, 8)) % 8;
         text(edgeChars[edgeIndex], 0, 0);
       } else {
-        int charIndex = int(map(1.-bright[id], 0, 1, 0, asciiChars.length - 1));
+        int charIndex = int(map(bright[id], 0, 1, 0, asciiChars.length - 1));
         char asciiChar = asciiChars[charIndex];
         text(asciiChar, 0, 0);
       }
