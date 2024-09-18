@@ -85,8 +85,8 @@ public void setup() {
     pg_render = (PGraphics2D) createGraphics(width, height, P2D);
     pg_render.smooth(4);
    
-    pg_oflow = (PGraphics2D) createGraphics(width, height, P2D);
-    pg_oflow.smooth(4);
+    //pg_oflow = (PGraphics2D) createGraphics(width, height, P2D);
+    //pg_oflow.smooth(4);
     
     
     
@@ -139,21 +139,19 @@ public void setup() {
     //pg_oflow.image(ruby, 0, 0, width, height);
     //pg_oflow.endDraw();
     
-    updateSpritePosition();
+    updateSpritePosition(gray);
     
     
     pg_render.beginDraw();
     pg_render.clear();
-    pg_render.image(pg_cam,0,0,width,height);
-    pg_render.fill(0,160);
-    pg_render.rect(0,0,width,height);
+    pg_render.background(0);
     pg_render.pushMatrix();
     pg_render.translate(spritePosition.x, spritePosition.y);
     pg_render.scale(0.5);
-    pg_render.image(gray, 0,0);
+    pg_render.image(gray,0,0);
     pg_render.popMatrix();
-    //pg_render.filter(255,255);
-    //pg_render.image(ruby, 0, 0, width, height);
+    pg_render.tint(255,255,255,125);
+    pg_render.image(pg_cam,0,0,width,height);
     pg_render.endDraw();
     
     // flow visualizations
@@ -162,22 +160,23 @@ public void setup() {
     opticalflow.renderVelocityStreams(pg_render, 5);
     
     background(0);
-    //image(pg_render,0,0);
     asciiRender(pg_render);
-    
+    //display fps for debug
+    //pushMatrix();
+    //fill(255);
+    //textSize(48);
+    //text(frameRate,100,100);
+    //popMatrix();
   }
 
 
-void updateSpritePosition(){
+void updateSpritePosition(PImage pg){
 
-  
-  
   spritePosition.x += spriteDirection.x;
   spritePosition.y += spriteDirection.y;
   
-  if(spritePosition.x < -50 || spritePosition.x > int(width - gray.width/2)){spriteDirection.x *= -1.;};
-  if(spritePosition.y < -100 || spritePosition.y > int(height - gray.height/2+100)){spriteDirection.y *= -1.;};
-
+  if(spritePosition.x < -50 || spritePosition.x > int(width - pg.width/2)){spriteDirection.x *= -1.;};
+  if(spritePosition.y < -100 || spritePosition.y > int(height - pg.height/2+100)){spriteDirection.y *= -1.;};
 
 }
 
@@ -197,7 +196,7 @@ void applyAscii(PGraphics2D pg){
       float luminance =  brightness(c)/255.;
       color render = colors[floor(luminance * (colors.length-1))];
       float diff = luminance - bright[id];
-      bright[id] += diff * 0.2;
+      bright[id] += diff * 0.5;
       
       pushMatrix();
       translate((x+cellSize/2), (y+cellSize/2));
