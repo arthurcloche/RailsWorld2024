@@ -21,6 +21,8 @@ PGraphics2D pg_render;
 PGraphics2D pg_cam;
 
 PVector spritePosition;
+PVector spriteDirection;
+PVector spriteDimension;
 
 int cam_w = 960;
 int cam_h = 540;
@@ -59,7 +61,9 @@ public void setup() {
     //context.print();
     //context.printGL();
     
-    spritePosition = new PVector(0,-80);
+    spritePosition = new PVector(0,0);
+    spriteDirection = new PVector(1,1).mult(4);
+    
     
     //railLogo = new Movie(this, "02.mov");
     //railLogo.loop();
@@ -135,14 +139,18 @@ public void setup() {
     //pg_oflow.image(ruby, 0, 0, width, height);
     //pg_oflow.endDraw();
     
+    updateSpritePosition();
+    
+    
     pg_render.beginDraw();
     pg_render.clear();
     pg_render.image(pg_cam,0,0,width,height);
     pg_render.fill(0,160);
     pg_render.rect(0,0,width,height);
     pg_render.pushMatrix();
+    pg_render.translate(spritePosition.x, spritePosition.y);
     pg_render.scale(0.5);
-    pg_render.image(gray, spritePosition.x,spritePosition.y);
+    pg_render.image(gray, 0,0);
     pg_render.popMatrix();
     //pg_render.filter(255,255);
     //pg_render.image(ruby, 0, 0, width, height);
@@ -159,6 +167,19 @@ public void setup() {
     
   }
 
+
+void updateSpritePosition(){
+
+  
+  
+  spritePosition.x += spriteDirection.x;
+  spritePosition.y += spriteDirection.y;
+  
+  if(spritePosition.x < -50 || spritePosition.x > int(width - gray.width/2)){spriteDirection.x *= -1.;};
+  if(spritePosition.y < -100 || spritePosition.y > int(height - gray.height/2+100)){spriteDirection.y *= -1.;};
+
+
+}
 
 void asciiRender(PGraphics2D pg){
     pg.loadPixels();
